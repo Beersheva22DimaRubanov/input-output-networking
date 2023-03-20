@@ -1,0 +1,5 @@
+2023-03-19T16:47:33.909825200 ERROR test-logger error message
+2023-03-19T16:47:33.909825200 WARN test-logger warn message
+2023-03-19T16:47:33.909825200 INFO test-logger info message
+2023-03-19T16:47:33.910825300 DEBUG test-logger debug message
+2023-03-19T16:47:33.910825300 TRACE test-logger trace message
