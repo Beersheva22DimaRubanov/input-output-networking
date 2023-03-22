@@ -48,15 +48,6 @@ public class ServerLogAppl {
 			res = switch(tokens[0]) {
 			case "log" -> addLog(tokens[1], tokens[2]);
 			case "counter" -> getLogCount(tokens[1]);
-//			case "counter" -> switch(tokens[1]) {
-//			case "error" -> logs.get("error").size() + "";
-//			case "warn" -> logs.get("warn").size() + "";
-//			case "info" -> logs.get("info").size() + "";
-//			case "debug" -> logs.get("debug").size() + "";
-//			case "trace" -> logs.get("trace").size() + "";
-//			
-//			default -> "Wrong Level " + tokens[1]; 
-//			};
 			default -> "Wrong type " + tokens[0];
 			};
 		}
@@ -78,12 +69,6 @@ public class ServerLogAppl {
 
 	private static String addLog(String key, String string) {
 		String res = "Not OK";
-//		List<String> list = logs.get(key);
-//		if( list == null) {
-//			list = new ArrayList<>();
-//			logs.put(key, list);
-//		}
-//		list.add(string);
 		if(logs.computeIfAbsent(key, k-> new ArrayList<>()).add(string)) {
 			res = "OK" + logs.size();
 		};
