@@ -24,8 +24,20 @@ public class TcpClient implements NetworkClient {
 
 	@Override
 	public <T> T send(String type, Serializable requestData) {
-		// TODO Auto-generated method stub
-		return null;
+		T res = null;
+		Request request = new Request(type, requestData);
+		try {
+			output.writeObject(request);
+			Response response = (Response) input.readObject();
+			if(response.code.equals(ResponseCode.OK)) {
+				res = (T) response.data;
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 
 }
