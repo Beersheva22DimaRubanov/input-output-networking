@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import telran.net.application.ServerLogAppl;
 
 public class TcpClientHandler implements Handler {
 	Socket socket;
@@ -19,28 +23,21 @@ public class TcpClientHandler implements Handler {
 
 	@Override
 	public void publish(LoggerRecord loggerRecord) {
-		String line = "log#" + loggerRecord.level.toString().toLowerCase() + "#" + loggerRecord.toString();
-		output.println(line);
+		LocalDateTime ldt = LocalDateTime.ofInstant(loggerRecord.timestamp,
+				ZoneId.of(loggerRecord.zoneId));
+		String message = String.format("%s %s %s %s", ldt, loggerRecord.level,
+				loggerRecord.loggerName, loggerRecord.message);
+		output.println(ServerLogAppl.LOG_TYPE + "#" + message);
 		try {
 			String response = input.readLine();
-			System.out.println(response);
+			if (!response.equals(ServerLogAppl.OK)) {
+				throw new RuntimeException("Response from Logger Server is " + response);
+			}
 		} catch (IOException e) {
-			System.out.println("Wrong answer");
+			new RuntimeException(e.getMessage());
 		}
 	}
 	
-	public int getLogCount(String level) {
-		String line = "counter#" + level;
-		output.println(line);
-		String response = "";
-		try {
-			response = input.readLine();
-		} catch (IOException e) {
-			System.out.println("Wrong answer");
-		}
-		return Integer.parseInt(response);
-	}
-
 	@Override
 	public void close() {
 		try {
