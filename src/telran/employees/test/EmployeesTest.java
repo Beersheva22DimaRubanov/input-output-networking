@@ -7,9 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Iterator;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -19,6 +23,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 import telran.employees.Company;
 import telran.employees.CompanyImpl;
 import telran.employees.Employee;
+import telran.employees.NetworkCompany;
+import telran.net.NetworkClient;
+import telran.net.TcpClient;
+import telran.net.UdpClient;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class EmployeesTest {
@@ -41,73 +49,96 @@ class EmployeesTest {
 	Employee empl2 = new Employee(ID2, "name", LocalDate.of(2000, MONTH1, 1), DEPARTMENT2, SALARY2);
 	Employee empl3 = new Employee(ID3, "name", LocalDate.of(2000, MONTH2, 1), DEPARTMENT1, SALARY3);
 	Employee empl4 = new Employee(ID4, "name", LocalDate.of(2000, MONTH1, 1), DEPARTMENT2, SALARY4);
-	Employee[] employees = {empl1, empl2, empl3, empl4};
-	Company company;
-		@BeforeEach
-		void setUp() throws Exception {
-			company = new CompanyImpl();
-			for(Employee empl: employees) {
-				company.addEmployee(empl);
-			}
+	Employee[] employees = { empl1, empl2, empl3, empl4 };
+	static Company company;
+	static NetworkClient client;
+
+	@BeforeAll
+	static void prepare() throws Exception {
+		client = new TcpClient("localhost", 4000);
+		company = new NetworkCompany(client);
+		File saveFile = new File(FILE_NAME);
+		saveFile.delete();
+	}
+
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
+		client.close();
+	}
+
+	@BeforeEach
+	void setUp() throws Exception {
+		Iterator<Employee> iter = company.iterator();
+		while (iter.hasNext()) {
+			company.removeemployee(iter.next().getId());
+		}
+		for (Employee empl : employees) {
+			company.addEmployee(empl);
 		}
 
-		@Test
-		void addEmployeeTest() {
-			Employee newEmployee = new Employee(ID10, DEPARTMENT2, BIRTH2, DEPARTMENT1, SALARY1);
-			assertTrue(company.addEmployee(newEmployee));
-			assertFalse(company.addEmployee(newEmployee));
-		}
-		@Test
-		void removeEmployeeTest() {
-			assertEquals(empl1, company.removeemployee(ID1));
-			assertNull(company.removeemployee(ID1));
-			runTest(new Employee[] {empl2, empl3, empl4});
-			
-		}
-		@Test
-		void employeesByMonthTest() {
-			assertTrue(company.getEmployeesByMonthBirth(20).isEmpty());
-			Employee[] expected = {empl1, empl2, empl4};
-			Employee[] actual = company.getEmployeesByMonthBirth(MONTH1).toArray(Employee[]::new);
-			Arrays.sort(actual);
-			assertArrayEquals(expected, actual);
-			company.removeemployee(ID1);
-			company.removeemployee(ID2);
-			company.removeemployee(ID4);
-			assertTrue(company.getEmployeesByMonthBirth(MONTH1).isEmpty());
-		}
-		@Test
-		void employeesByDepartmentTest() {
-			assertTrue(company.getEmployeesByDepartment("gggggg").isEmpty());
-			Employee[] expected = {empl2, empl4};
-			Employee[] actual = company.getEmployeesByDepartment(DEPARTMENT2).toArray(Employee[]::new);
-			Arrays.sort(actual);
-			assertArrayEquals(expected, actual);
-			company.removeemployee(ID2);
-			company.removeemployee(ID4);
-			assertTrue(company.getEmployeesByDepartment(DEPARTMENT2).isEmpty());
-			
-		}
-		@Test
-		void employeesBySalaryTest() {
-			assertTrue(company.getEmployeesBySalary(100000000,100000100).isEmpty());
-			Employee[] expected = {empl1, empl2, empl3};
-			Employee[] actual = company.getEmployeesBySalary(SALARY1, SALARY3).toArray(Employee[]::new);
-			Arrays.sort(actual);
-			 assertArrayEquals(expected, actual);
-			company.removeemployee(ID1);
-			company.removeemployee(ID2);
-			company.removeemployee(ID3);
-			assertTrue(company.getEmployeesBySalary(SALARY1, SALARY3).isEmpty());
-		}
+	}
 
-		private void runTest(Employee[] expected) {
-			Employee[]actual = company.getAllEmployees().toArray(Employee[]::new);
-			Arrays.sort(actual);
-			assertArrayEquals(expected, actual);
-			
-		}
-		
+	@Test
+	void addEmployeeTest() {
+		Employee newEmployee = new Employee(ID10, DEPARTMENT2, BIRTH2, DEPARTMENT1, SALARY1);
+		assertTrue(company.addEmployee(newEmployee));
+		assertFalse(company.addEmployee(newEmployee));
+	}
+
+	@Test
+	void removeEmployeeTest() {
+		assertEquals(empl1, company.removeemployee(ID1));
+		assertNull(company.removeemployee(ID1));
+		runTest(new Employee[] { empl2, empl3, empl4 });
+
+	}
+
+	@Test
+	void employeesByMonthTest() {
+		assertTrue(company.getEmployeesByMonthBirth(20).isEmpty());
+		Employee[] expected = { empl1, empl2, empl4 };
+		Employee[] actual = company.getEmployeesByMonthBirth(MONTH1).toArray(Employee[]::new);
+		Arrays.sort(actual);
+		assertArrayEquals(expected, actual);
+		company.removeemployee(ID1);
+		company.removeemployee(ID2);
+		company.removeemployee(ID4);
+		assertTrue(company.getEmployeesByMonthBirth(MONTH1).isEmpty());
+	}
+
+	@Test
+	void employeesByDepartmentTest() {
+		assertTrue(company.getEmployeesByDepartment("gggggg").isEmpty());
+		Employee[] expected = { empl2, empl4 };
+		Employee[] actual = company.getEmployeesByDepartment(DEPARTMENT2).toArray(Employee[]::new);
+		Arrays.sort(actual);
+		assertArrayEquals(expected, actual);
+		company.removeemployee(ID2);
+		company.removeemployee(ID4);
+		assertTrue(company.getEmployeesByDepartment(DEPARTMENT2).isEmpty());
+
+	}
+
+	@Test
+	void employeesBySalaryTest() {
+		assertTrue(company.getEmployeesBySalary(100000000, 100000100).isEmpty());
+		Employee[] expected = { empl1, empl2, empl3 };
+		Employee[] actual = company.getEmployeesBySalary(SALARY1, SALARY3).toArray(Employee[]::new);
+		Arrays.sort(actual);
+		assertArrayEquals(expected, actual);
+		company.removeemployee(ID1);
+		company.removeemployee(ID2);
+		company.removeemployee(ID3);
+		assertTrue(company.getEmployeesBySalary(SALARY1, SALARY3).isEmpty());
+	}
+
+	private void runTest(Employee[] expected) {
+		Employee[] actual = company.getAllEmployees().toArray(Employee[]::new);
+		Arrays.sort(actual);
+		assertArrayEquals(expected, actual);
+
+	}
+
 		@Test
 		@Order(1)
 		void saveTest() {

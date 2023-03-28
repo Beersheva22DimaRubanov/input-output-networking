@@ -1,6 +1,7 @@
 package telran.employees;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 
 public interface Company extends Iterable<Employee>, Serializable {
@@ -13,4 +14,9 @@ public interface Company extends Iterable<Employee>, Serializable {
 	Employee getEmployee(long id);
 	void save(String pathName); //save all employee objects
 	void restore(String path); //restore all employee objects
+	
+	@Override
+	public default Iterator<Employee> iterator() {
+		return getAllEmployees().iterator();
+	}
 }
