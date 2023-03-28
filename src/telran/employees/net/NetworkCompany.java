@@ -1,10 +1,14 @@
-package telran.employees;
+package telran.employees.net;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 
+import telran.employees.Company;
+import telran.employees.Employee;
 import telran.net.NetworkClient;
 
-public class NetworkCompany implements Company {
+public class NetworkCompany implements Company, Closeable {
 
 	private static final long serialVersionUID = 1L;
 	private NetworkClient client;
@@ -57,5 +61,10 @@ public class NetworkCompany implements Company {
 	@Override
 	public void restore(String path) {
 		client.send("restore", path);
+	}
+
+	@Override
+	public void close() throws IOException {
+		client.close();
 	}
 }

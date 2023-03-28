@@ -1,5 +1,6 @@
 package telran.employees;
 
+import telran.employees.net.ComponyProtocol;
 import telran.net.Protocol;
 import telran.net.TcpServer;
 

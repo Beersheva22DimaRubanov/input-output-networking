@@ -1,7 +1,12 @@
-package telran.employees;
+package telran.employees.net;
 
 import java.io.Serializable;
 
+import javax.crypto.spec.RC2ParameterSpec;
+
+import telran.employees.Company;
+import telran.employees.CompanyImpl;
+import telran.employees.Employee;
 import telran.net.Protocol;
 import telran.net.Request;
 import telran.net.Response;
@@ -22,7 +27,7 @@ public class ComponyProtocol implements Protocol {
 		case "save" -> save(request.data);
 		case "restore" -> restore(request.data);
 		case "getEmployee" -> getEmployee(request.data);
-		default -> throw new IllegalArgumentException("Unexpected value: " + request.type);
+		default -> new Response(ResponseCode.WRONG_DATA, null);
 		};
 		return response;
 	}

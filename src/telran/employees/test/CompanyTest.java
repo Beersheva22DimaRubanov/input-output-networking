@@ -23,13 +23,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import telran.employees.Company;
 import telran.employees.CompanyImpl;
 import telran.employees.Employee;
-import telran.employees.NetworkCompany;
+import telran.employees.net.NetworkCompany;
 import telran.net.NetworkClient;
 import telran.net.TcpClient;
 import telran.net.UdpClient;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class EmployeesTest {
+class CompanyTest {
 	private static final long ID1 = 123;
 	private static final int MONTH1 = 1;
 	private static final String DEPARTMENT1 = "department1";
@@ -51,27 +51,9 @@ class EmployeesTest {
 	Employee empl4 = new Employee(ID4, "name", LocalDate.of(2000, MONTH1, 1), DEPARTMENT2, SALARY4);
 	Employee[] employees = { empl1, empl2, empl3, empl4 };
 	static Company company;
-	static NetworkClient client;
-
-	@BeforeAll
-	static void prepare() throws Exception {
-		client = new TcpClient("localhost", 4000);
-		company = new NetworkCompany(client);
-		File saveFile = new File(FILE_NAME);
-		saveFile.delete();
-	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-		client.close();
-	}
 
 	@BeforeEach
 	void setUp() throws Exception {
-		Iterator<Employee> iter = company.iterator();
-		while (iter.hasNext()) {
-			company.removeemployee(iter.next().getId());
-		}
 		for (Employee empl : employees) {
 			company.addEmployee(empl);
 		}
