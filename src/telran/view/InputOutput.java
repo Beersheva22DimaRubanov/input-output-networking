@@ -57,22 +57,32 @@ public interface InputOutput {
 
 	default int readInt(String prompt, String errorPrompt, int min, int max) {
 		Function<String, Integer> function = t -> {
-			int res = Integer.parseInt(t);
-			if (res > max || res < min) {
-				throw new RuntimeException("Num should be in a range: " + min + " - " + max);
+			try {
+				int res = Integer.parseInt(t);
+				checkRange(min, max, res);
+				return res;
+			} catch (NumberFormatException e) {
+				throw new RuntimeException("must be a number");
 			}
-			return res;
 		};
 		return readObject(prompt, errorPrompt, function);
 	}
 
+	default void checkRange(double min, double max, double res) {
+		if (res > max || res < min) {
+			throw new RuntimeException("Num should be in a range: " + min + " - " + max);
+		}
+	}
+
 	default long readLong(String prompt, String errorPrompt, long min, long max) {
 		Function<String, Long> function = t -> {
-			long res = Long.parseLong(t);
-			if (res > max || res < min) {
-				throw new RuntimeException("Num should be in a range: " + min + " - " + max);
+			try {
+				long res = Long.parseLong(t);
+				checkRange(min, max, res);
+				return res;
+			} catch (NumberFormatException e) {
+				throw new RuntimeException("must be a number");
 			}
-			return res;
 		};
 		return readObject(prompt, errorPrompt, function);
 	}
@@ -84,10 +94,15 @@ public interface InputOutput {
 	default LocalDate readDate(String prompt, String errorPrompt, String format, LocalDate min,
 			LocalDate max) {
 		Function<String, LocalDate> function = t -> {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(t);
+			DateTimeFormatter formatter = null;
+			try {
+				formatter = DateTimeFormatter.ofPattern(t);
+			} catch (Exception e) {
+				throw new RuntimeException("Wrong date format " + format);
+			}
 			LocalDate date = LocalDate.parse(t, formatter);
-			if (date.compareTo(max) > 0 || date.compareTo(min) < 0) {
-				throw new RuntimeException("Wrong date");
+			if (date.isAfter(max)|| date.isBefore(min)) {
+				throw new RuntimeException("Date must be in range: " + min + " - " + max);
 			}
 			return date;
 		};
@@ -96,11 +111,13 @@ public interface InputOutput {
 
 	default double readNumber(String prompt, String errorPrompt, double min, double max) {
 		Function<String, Double> function = t -> {
-			Double res = Double.parseDouble(t);
-			if (res > max || res < min) {
-				throw new RuntimeException("Num should be in a range: " + min + " - " + max);
+			try {
+				double res = Double.parseDouble(t);
+				checkRange(min, max, res);
+				return res;
+			} catch (NumberFormatException e) {
+				throw new RuntimeException("must be a number");
 			}
-			return res;
 		};
 		return readObject(prompt, errorPrompt, function);
 	}

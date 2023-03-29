@@ -15,6 +15,4 @@ public class StandartInputOutput implements InputOutput {
 	public void writeString(Object obj) {
 		System.out.print(obj.toString());
 	}
-	
-	
 }
