@@ -16,7 +16,7 @@ public class Menu implements Item {
 	}
 
 	public Menu(String name, Item... items) {
-		this(name, new ArrayList<>(Arrays.asList(null)));
+		this(name, new ArrayList<>(Arrays.asList(items)));
 	}
 
 	@Override
@@ -40,7 +40,8 @@ public class Menu implements Item {
 				}
 			}
 		} catch (Exception e) {
-			io.writeLine(e.getMessage());
+//			io.writeLine(e.getMessage());
+			e.printStackTrace();
 		}
 		io.writeLine("Thanks & Goodbay");
 
@@ -48,7 +49,7 @@ public class Menu implements Item {
 
 	private void displayTitle(InputOutput io) {
 		io.writeLine("*".repeat(STARS_AMOUNT));
-		io.writeLine(String.format("*%s%s*", " ".repeat(STARS_AMOUNT/4), name));
+		io.writeLine(String.format("*%s%s", " ".repeat(STARS_AMOUNT/6), name));
 		io.writeLine("*".repeat(STARS_AMOUNT));
 	}
 

@@ -108,6 +108,10 @@ public interface InputOutput {
 		};
 		return readObject(prompt, errorPrompt, function);
 	}
+	
+	default double readNumber(String prompt, String errorPrompt) {
+		return readObject(prompt, errorPrompt, Double::parseDouble);
+	}
 
 	default double readNumber(String prompt, String errorPrompt, double min, double max) {
 		Function<String, Double> function = t -> {
