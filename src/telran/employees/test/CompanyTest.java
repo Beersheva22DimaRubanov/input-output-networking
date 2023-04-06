@@ -69,8 +69,8 @@ class CompanyTest {
 
 	@Test
 	void removeEmployeeTest() {
-		assertEquals(empl1, company.removeemployee(ID1));
-		assertNull(company.removeemployee(ID1));
+		assertEquals(empl1, company.removeEmployee(ID1));
+		assertNull(company.removeEmployee(ID1));
 		runTest(new Employee[] { empl2, empl3, empl4 });
 
 	}
@@ -82,9 +82,9 @@ class CompanyTest {
 		Employee[] actual = company.getEmployeesByMonthBirth(MONTH1).toArray(Employee[]::new);
 		Arrays.sort(actual);
 		assertArrayEquals(expected, actual);
-		company.removeemployee(ID1);
-		company.removeemployee(ID2);
-		company.removeemployee(ID4);
+		company.removeEmployee(ID1);
+		company.removeEmployee(ID2);
+		company.removeEmployee(ID4);
 		assertTrue(company.getEmployeesByMonthBirth(MONTH1).isEmpty());
 	}
 
@@ -95,8 +95,8 @@ class CompanyTest {
 		Employee[] actual = company.getEmployeesByDepartment(DEPARTMENT2).toArray(Employee[]::new);
 		Arrays.sort(actual);
 		assertArrayEquals(expected, actual);
-		company.removeemployee(ID2);
-		company.removeemployee(ID4);
+		company.removeEmployee(ID2);
+		company.removeEmployee(ID4);
 		assertTrue(company.getEmployeesByDepartment(DEPARTMENT2).isEmpty());
 
 	}
@@ -108,9 +108,9 @@ class CompanyTest {
 		Employee[] actual = company.getEmployeesBySalary(SALARY1, SALARY3).toArray(Employee[]::new);
 		Arrays.sort(actual);
 		assertArrayEquals(expected, actual);
-		company.removeemployee(ID1);
-		company.removeemployee(ID2);
-		company.removeemployee(ID3);
+		company.removeEmployee(ID1);
+		company.removeEmployee(ID2);
+		company.removeEmployee(ID3);
 		assertTrue(company.getEmployeesBySalary(SALARY1, SALARY3).isEmpty());
 	}
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Company extends Iterable<Employee>, Serializable {
 	boolean addEmployee(Employee empl);//return true if added(no two emp with the same Id)
-	Employee removeemployee(long id);//return reference to removed Employee or null
+	Employee removeEmployee(long id);//return reference to removed Employee or null
 	List<Employee> getAllEmployees();
 	List<Employee> getEmployeesByMonthBirth(int month);//employees born at a given month
 	List<Employee> getEmployeesBySalary(int salaryFrom, int salaryTo);// emp with salary in a given
@@ -15,8 +15,5 @@ public interface Company extends Iterable<Employee>, Serializable {
 	void save(String pathName); //save all employee objects
 	void restore(String path); //restore all employee objects
 	
-	@Override
-	public default Iterator<Employee> iterator() {
-		return getAllEmployees().iterator();
-	}
+	
 }

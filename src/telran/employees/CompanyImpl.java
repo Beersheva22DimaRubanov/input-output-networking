@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +55,7 @@ public class CompanyImpl implements Company {
 	}
 
 	@Override
-	public Employee removeemployee(long id) {
+	public Employee removeEmployee(long id) {
 		Employee res = employees.remove(id);
 		if (res != null) {
 			removeEmplFromMap(res.getBirthDate().getMonthValue(), employeesBirth);
@@ -72,12 +71,12 @@ public class CompanyImpl implements Company {
 
 	@Override
 	public List<Employee> getAllEmployees() {
-		return new ArrayList(employees.values());
+		return new ArrayList<Employee>(employees.values());
 	}
 
 	@Override
 	public List<Employee> getEmployeesByMonthBirth(int month) {
-		return new ArrayList(employeesBirth.getOrDefault(month, Collections.emptySet()));
+		return new ArrayList<Employee>(employeesBirth.getOrDefault(month, Collections.emptySet()));
 	}
 
 	@Override

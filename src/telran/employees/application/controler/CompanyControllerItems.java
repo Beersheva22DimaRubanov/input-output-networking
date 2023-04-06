@@ -48,7 +48,7 @@ public class CompanyControllerItems {
 
 	private static void removeEmployee(InputOutput io) {
 		Long id = getId(io, true);
-		Employee employee = company.removeemployee(id);
+		Employee employee = company.removeEmployee(id);
 		if (employee != null) {
 			io.writeLine("Delete employee: " + employee.getName() + " from: "
 					+ employee.getDepartment());

@@ -2,6 +2,7 @@ package telran.employees.net;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import telran.employees.Company;
@@ -23,7 +24,7 @@ public class NetworkCompany implements Company, Closeable {
 	}
 
 	@Override
-	public Employee removeemployee(long id) {
+	public Employee removeEmployee(long id) {
 		return client.send("removeEmployee", id);
 	}
 
@@ -66,5 +67,10 @@ public class NetworkCompany implements Company, Closeable {
 	@Override
 	public void close() throws IOException {
 		client.close();
+	}
+
+	@Override
+	public Iterator<Employee> iterator() {
+		return getAllEmployees().iterator();
 	}
 }

@@ -1,8 +1,7 @@
 package telran.employees.net;
 
 import java.io.Serializable;
-
-import javax.crypto.spec.RC2ParameterSpec;
+import java.lang.reflect.Method;
 
 import telran.employees.Company;
 import telran.employees.CompanyImpl;
@@ -12,24 +11,11 @@ import telran.net.Request;
 import telran.net.Response;
 import telran.net.ResponseCode;
 
-public class ComponyProtocol implements Protocol {
+public class CompanyProtocol implements Protocol {
 	private Company company = new CompanyImpl();
-
-	@Override
-	public Response getResponse(Request request) {
-		Response response = switch (request.type) {
-		case "addEmployee" -> addEmployee(request.data);
-		case "removeEmployee" -> removeEmployee(request.data);
-		case "getAllEmployees" -> getAllEmployees(request.data);
-		case "getEmployeesByMonthBirth" -> getEmployeesByMonthBirth(request.data);
-		case "getEmployeesBySalary" -> getEmployeesBySalary(request.data);
-		case "getEmployeesByDepartment" -> getEmployeesByDepartment(request.data);
-		case "save" -> save(request.data);
-		case "restore" -> restore(request.data);
-		case "getEmployee" -> getEmployee(request.data);
-		default -> new Response(ResponseCode.WRONG_DATA, null);
-		};
-		return response;
+	
+	public CompanyProtocol(Company company) {
+		this.company = company;
 	}
 
 	private Response getEmployeesBySalary(Serializable data) {
@@ -64,11 +50,25 @@ public class ComponyProtocol implements Protocol {
 	}
 
 	private Response removeEmployee(Serializable data) {
-		return new Response(ResponseCode.OK, company.removeemployee((long) data));
+		return new Response(ResponseCode.OK, company.removeEmployee((long) data));
 	}
 
 	private Response addEmployee(Serializable data) {
 		return new Response(ResponseCode.OK, company.addEmployee((Employee)data));
+	}
+
+	@Override
+	public Response getResponse(Request request) {
+		try {
+		Method	method = CompanyProtocol.class.getDeclaredMethod(request.type, Serializable.class);
+		method.setAccessible(true);
+		return (Response) method.invoke(this, request.data);
+		} catch (NoSuchMethodException e) {
+			return new Response(ResponseCode.WRONG_REQUEST, e.toString());
+		} catch (Exception e) {
+			return new Response(ResponseCode.WRONG_DATA, e.toString());
+		}
+		
 	}
 
 }

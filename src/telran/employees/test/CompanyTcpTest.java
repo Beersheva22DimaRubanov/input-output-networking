@@ -20,7 +20,7 @@ class CompanyTcpTest extends CompanyTest {
 @Override
 void setUp() throws Exception{
 	company = netProxy;
-	company.forEach(e -> company.removeemployee(e.getId()));
+	company.forEach(e -> company.removeEmployee(e.getId()));
 	super.setUp();
 }
 @AfterAll
