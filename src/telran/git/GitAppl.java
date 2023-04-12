@@ -1,7 +1,6 @@
 package telran.git;
 
-import telran.view.InputOutput;
-import telran.view.Item;
+import telran.view.InputOutput;	
 import telran.view.Menu;
 import telran.view.StandartInputOutput;
 
