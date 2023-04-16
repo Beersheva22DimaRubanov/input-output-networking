@@ -8,11 +8,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +25,7 @@ public class GitRepositoryImpl implements GitRepository {
 	private Commit lastCommit;
 	private String head;
 	private static String path = ".";
-	private Commit currentCommit;
-	private String regexStr = ".*?(.classpath)|(.git)|(test.data)|(Employees.data)|(.settings)|(.gitignore)|(.project)";
+	private String regexStr = "";
 
 	private GitRepositoryImpl() {
 		commits = new LinkedHashMap<>();
@@ -70,8 +67,8 @@ public class GitRepositoryImpl implements GitRepository {
 		List<FileState> filesStates = info();
 		if (!isCommited(filesStates)) {
 			setCommited(filesStates);
-			Commit commit = new Commit(filesStates, commitMessage);
-			lastCommit = currentCommit = commit;
+			Commit commit = new Commit(filesStates, commitMessage, branches.get(head).getName());
+			lastCommit = commit;
 			commits.put(commit.getName(), commit);
 			branches.get(head).setLastCommit(commit);
 			res = "commited";
@@ -158,12 +155,21 @@ public class GitRepositoryImpl implements GitRepository {
 	@Override
 	public String deleteBranch(String branchName) {
 		String res = "wrong branch name";
-		if (isBranch(branchName)) {
-			if (isCommited(info())) {
-				branches.remove(branchName);
-				res = "Branch " + branchName + " was rdeleted";
-			} else {
-				res = "there are uncommited files";
+		if (branchName.equals(head)) {
+			res = "you cant remove current branch";
+		} else {
+			if (isBranch(branchName)) {
+				if (isCommited(info())) {
+					for (Entry<String, Commit> commit : commits.entrySet()) {
+						if (commit.getValue().getBranch().equals(branchName)) {
+							commits.remove(commit.getValue().getName());
+						}
+					}
+					branches.remove(branchName);
+					res = "Branch " + branchName + " was deleted";
+				} else {
+					res = "there are uncommited files";
+				}
 			}
 		}
 		return res;
@@ -199,37 +205,33 @@ public class GitRepositoryImpl implements GitRepository {
 	@Override
 	public String switchTo(String name) {
 		String res = "Wrong name";
-		if (branches.containsKey(name) | commits.containsKey(name)) {
-
+		if (branches.containsKey(name) || commits.containsKey(name)) {
+			if (name.equals(head) || name.equals(lastCommit.getName())) {
+				res = "switching to the current commit doesn’t make a sense";
+			}
 			if (!isCommited(info())) {
 				res = "switch may be done only after commit";
 			} else {
 				List<File> files = getFiles();
-				Map<String, byte[]> content = commits.get(name).getContent();
-				Map<String, FileState> filesState = commits.get(name).getFiles();
+				Commit commit = commits.containsKey(name) ? commits.get(name)
+						: branches.get(name).getLastCommit();
+				Map<String, byte[]> content = commit.getContent();
+				Map<String, FileState> filesState = commit.getFiles();
 				for (File file : files) {
 					String filePath = file.getPath();
 					file.delete();
 					if (filesState.containsKey(filePath)) {
-						try {
-							Files.writeString(Path.of(filePath), new String(content.get(filePath)));
-							currentCommit = commits.containsKey(name) ? commits.get(name)
-									: branches.get(name).getLastCommit();
-							filesState.remove(file.getPath());
-							head = currentCommit.getName();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						writeFile(content.get(filePath), Path.of(filePath));
+						filesState.remove(file.getPath());
+						head = branches.containsKey(name) ? branches.get(name).getName()
+								: commits.get(name).getName();
+						res = "Switched";
 					}
 				}
 				if (!filesState.isEmpty()) {
 					for (Entry<String, FileState> comitedFiles : filesState.entrySet()) {
-						try {
-							Files.writeString(Path.of(comitedFiles.getValue().getPath()),
-									new String(content.get(comitedFiles.getValue().getPath())));
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						writeFile(content.get(comitedFiles.getValue().getPath()),
+								Path.of(comitedFiles.getValue().getPath()));
 					}
 				}
 				List<FileState> filesStates = info();
@@ -237,6 +239,14 @@ public class GitRepositoryImpl implements GitRepository {
 			}
 		}
 		return res;
+	}
+
+	private void writeFile(byte[] content, Path path) {
+		try {
+			Files.writeString(path, new String(content));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -265,14 +275,14 @@ public class GitRepositoryImpl implements GitRepository {
 	public String addIgnoredFileNameExp(String str) {
 		String res = "Wrong regex (entere fileType)";
 		String regex = "^[.][a-z]*";
-		if (regex.matches(str)) {
-			if (regexStr == null) {
-				regexStr = ".*?";
+		if (str.matches(regex)) {
+			if (regexStr == "") {
+				regexStr +=  ".*?" + str ;
+			}else {
+				regexStr += "|" + str ;
 			}
 			res = "added to ignore";
-			regexStr += "(" + regex + ")|";
 		}
 		return res;
 	}
-
 }

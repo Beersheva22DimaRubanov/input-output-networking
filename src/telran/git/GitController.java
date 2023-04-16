@@ -38,7 +38,7 @@ public class GitController {
 	
 	private static void commit(InputOutput io) {
 		String message = io.readString("Entere commit message");
-		git.commit(message);
+		io.writeLine(git.commit(message));
 	}
 	
 	private static void addToIgnore(InputOutput io) {

@@ -13,11 +13,13 @@ public class Commit implements Serializable  {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String message;
+	private String branch;
 	private Map<String, byte[]> content;
 	private Map<String, FileState> files;
 
-	public Commit(List<FileState> files, String message) {
+	public Commit(List<FileState> files, String message, String branch) {
 		super();
+		this.branch = branch;
 		this.name = String.valueOf(this.hashCode());
 		this.message = message;
 		this.files = new HashMap<>();
@@ -48,5 +50,13 @@ public class Commit implements Serializable  {
 
 	public String getMessage() {
 		return message;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
 	}
 }

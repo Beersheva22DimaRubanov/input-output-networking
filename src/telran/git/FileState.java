@@ -32,7 +32,8 @@ public class FileState implements Serializable {
 
 	@Override
 	public String toString() {
-		return "State path=" + path + ", state=" + getState() + "";
+		String name = path.replace(".\\", "");
+		return "File = " + name + ", state=" + getState() + "\n";
 	}
 
 	public Long getLastModified() {
