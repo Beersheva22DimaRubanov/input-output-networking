@@ -58,7 +58,7 @@ public class GitRepositoryImpl implements GitRepository {
 
 	@Override
 	public String commit(String commitMessage) {
-		String res = null;
+		String res = "";
 		if (head == null) {
 			createBranch(MASTER);
 		} else if (commits.containsKey(head)) {

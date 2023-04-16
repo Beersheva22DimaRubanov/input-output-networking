@@ -13,7 +13,7 @@ public class FileState implements Serializable {
 	public FileState(String path) {
 		super();
 		this.path = path;
-		this.file = new File(path.toString());
+		this.file = new File(path);
 		this.lastModified = file.lastModified();
 		this.state = States.UNTRACKED;
 	}
