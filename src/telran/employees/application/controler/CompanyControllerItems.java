@@ -42,7 +42,10 @@ public class CompanyControllerItems {
 
 	private static Item getAdminItemMenu() {
 		Menu menu = new Menu("Admin menu", Item.of("Add employee", t -> addEmployee(t)),
-				Item.of("Remove employee", t -> removeEmployee(t)), Item.exit());
+				Item.of("Remove employee", t -> removeEmployee(t)),
+				Item.of("Update employee salary", t -> updateEmployeeSalary(t)),
+				Item.of("Update employee department", t -> updateEmployeeDepartment(t)),
+				Item.exit());
 		return menu;
 	}
 
@@ -134,4 +137,22 @@ public class CompanyControllerItems {
 			io.writeLine(employees);
 		}
 	}
+
+	private static void updateEmployeeSalary(InputOutput io) {
+		long userId = io.readLong("Enter employee Id", "Wrong number", 1,
+				company.getAllEmployees().size());
+		int newSalary = io.readInt("Enter new salary", "Wrong number", 1, Integer.MAX_VALUE);
+		company.updateSalary(userId, newSalary);
+		io.writeLine("Changed");
+	}
+	
+	private static void updateEmployeeDepartment(InputOutput io) {
+		long userId = io.readLong("Enter employee Id", "Wrong number", 1,
+				company.getAllEmployees().size());
+		String newDep = getDepartment(io);
+		company.updateDepartment(userId, newDep);
+		io.writeLine("Changed");
+	}
+	
+	
 }

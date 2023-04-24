@@ -14,6 +14,6 @@ public interface Company extends Iterable<Employee>, Serializable {
 	Employee getEmployee(long id);
 	void save(String pathName); //save all employee objects
 	void restore(String path); //restore all employee objects
-	
-	
+	void updateSalary(long emplId, int newSalary);
+	void updateDepartment(long emplId, String newDepartment);
 }

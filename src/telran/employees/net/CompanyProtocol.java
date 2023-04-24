@@ -6,55 +6,69 @@ import java.lang.reflect.Method;
 import telran.employees.Company;
 import telran.employees.CompanyImpl;
 import telran.employees.Employee;
+import telran.employees.PairId;
 import telran.net.Protocol;
 import telran.net.Request;
 import telran.net.Response;
 import telran.net.ResponseCode;
 
 public class CompanyProtocol implements Protocol {
-	private Company company = new CompanyImpl();
+	private Company company;
 	
 	public CompanyProtocol(Company company) {
 		this.company = company;
 	}
 
-	private Response getEmployeesBySalary(Serializable data) {
+	Serializable getEmployeesBySalary(Serializable data) {
 		int[] salary = (int[])data;
 		return new Response(ResponseCode.OK, (Serializable)company.getEmployeesBySalary(salary[0], salary[1]));
 	}
 
-	private Response getEmployee(Serializable data) {
+	Serializable getEmployee(Serializable data) {
 		return new Response(ResponseCode.OK, company.getEmployee((long) data));
 	}
 
-	private Response restore(Serializable data) {
+	Serializable restore(Serializable data) {
 		company.restore(data.toString());
 		return new Response(ResponseCode.OK, "Restored");
 	}
 
-	private Response save(Serializable data) {
+	Serializable save(Serializable data) {
 		company.save(data.toString());
 		return new Response(ResponseCode.OK, "Saved");
 	}
 
-	private Response getEmployeesByDepartment(Serializable data) {
+	Serializable getEmployeesByDepartment(Serializable data) {
 		return new Response(ResponseCode.OK, (Serializable)company.getEmployeesByDepartment(data.toString()));
 	}
 
-	private Response getEmployeesByMonthBirth(Serializable data) {
+	Serializable getEmployeesByMonthBirth(Serializable data) {
 		return new Response(ResponseCode.OK, (Serializable)company.getEmployeesByMonthBirth((int)data));
 	}
 
-	private Response getAllEmployees(Serializable data) {
+	Serializable getAllEmployees(Serializable data) {
 		return new Response(ResponseCode.OK, (Serializable)company.getAllEmployees());
 	}
 
-	private Response removeEmployee(Serializable data) {
+	Serializable removeEmployee(Serializable data) {
 		return new Response(ResponseCode.OK, company.removeEmployee((long) data));
 	}
 
-	private Response addEmployee(Serializable data) {
+	Serializable addEmployee(Serializable data) {
 		return new Response(ResponseCode.OK, company.addEmployee((Employee)data));
+	}
+	
+	Serializable updateSalary(Serializable data) {
+		@SuppressWarnings("unchecked")
+		PairId<Integer> idSalary = (PairId<Integer>) data;
+		company.updateSalary(idSalary.id(), idSalary.value());
+		return new Response(ResponseCode.OK, data);
+	}
+	Serializable updateDepartment(Serializable data) {
+		@SuppressWarnings("unchecked")
+		PairId<String> idDepartment = (PairId<String>) data;
+		company.updateDepartment(idDepartment.id(), idDepartment.value());
+		return new Response(ResponseCode.OK, data);
 	}
 
 	@Override

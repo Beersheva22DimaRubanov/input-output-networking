@@ -73,4 +73,15 @@ public class NetworkCompany implements Company, Closeable {
 	public Iterator<Employee> iterator() {
 		return getAllEmployees().iterator();
 	}
+
+	@Override
+	public void updateSalary(long emplId, int newSalary) {
+//		client.send("updateSalary", emplId);
+	}
+
+	@Override
+	public void updateDepartment(long emplId, String newDepartment) {
+//		client.send("updateDepartment", emplId);
+		
+	}
 }

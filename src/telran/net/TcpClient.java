@@ -26,16 +26,21 @@ public class TcpClient implements NetworkClient {
 	public <T> T send(String type, Serializable requestData) {
 		T res = null;
 		Request request = new Request(type, requestData);
-		try {
-			output.writeObject(request);
-			Response response = (Response) input.readObject();
-			if (!response.code.equals(ResponseCode.OK)) {
-				throw new Exception(response.data.toString());
+		boolean serverIsAvailable = true;
+		while (serverIsAvailable ) {
+			try {
+				output.writeObject(request);
+				Response response = (Response) input.readObject();
+				if (!response.code.equals(ResponseCode.OK)) {
+					throw new Exception(response.data.toString());
 
-			}
-			res = (T) response.data;
-		} catch (Exception e) {
-			throw new RuntimeException();
+				}
+				res = (T) response.data;
+				break;
+			} catch (Exception e) {
+				throw new RuntimeException();
+
+			} 
 		}
 		return res;
 	}
